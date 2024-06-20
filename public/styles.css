@@ -1,0 +1,15 @@
+.box {
+    border: 2px solid #000000; /* 黑色邊框，2px 寬度，可以更改顏色 */
+    padding: 10px;/* 高度 */
+    margin: 50px;/* 有點像放大縮小 */
+    text-align: center; /* 將文本置中 */
+}
+
+.box:hover {
+    border-color: red; /* 鼠標懸停時邊框顏色變為紅色 */
+}
+
+.box.resizable {
+    resize: both; /* 可調整大小 */
+    overflow: auto; /* 添加滾動條 ，可改成hidden*/
+}

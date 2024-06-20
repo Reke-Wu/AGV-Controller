@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV Charging Status</title>
+    <style>
+        body {
+            background-image: url("../小清晰.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30vh;
+            flex-direction: column; /* 使内容垂直排列 */
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .box { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 70%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+       
+
+    </style>
+</head>
+
+<body>
+    <!-- 第一个页面：正在回去待機點 -->
+    <div id="page1" class="container">
+        <div class="box">正在回去待機點<span id="dots">...</span></div>
+    </div>
+    <!-- 第二个页面：已回到待機點 -->
+    <div id="page2" class="container" style="display: none;">
+        <div class="box">已回到待機點</div>
+        <div class="box">再 <span id="countdown"> 10 </span> 秒 回到首頁</div>
+    </div>
+
+    <script>
+        // 動態顯示點點動畫
+        document.addEventListener("DOMContentLoaded", function () {
+            const dotsElement = document.getElementById("dots");
+            let dotCount = 0;
+            // 設置點的動畫效果
+            setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dotsElement.textContent = '.'.repeat(dotCount);
+            }, 500); // 每0.5秒更新一次
+        });
+
+        // 獲取訪問令牌的異步函數
+        async function getAccessToken() {
+            // 向伺服器請求訪問令牌
+            const response = await fetch('/api/get-token', { method: 'POST' });
+            // 解析回應的 JSON 數據
+            const data = await response.json();
+            // 返回訪問令牌
+            return data.access_token;
+        }
+
+        // 檢查機器人狀態的異步函數
+        async function checkRobotStatus() {
+            const accessToken = await getAccessToken();
+            const robotSn = 'K21SHW0A1102410299AF'; // 替換為實際的機器人序列號
+            const url = `https://global-openapi.orionstar.com/v1/robot/pipe/query_status?robot_sn=${robotSn}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === '32610007') { // 假設機器人回傳的狀態是 '成功到達目的地'
+                        document.getElementById("page1").style.display = "none";
+                        document.getElementById("page2").style.display = "block";
+
+                        // 倒計時
+                        let countdown = 10;
+                        const countdownElement = document.getElementById("countdown");
+                        const countdownInterval = setInterval(() => {
+                            countdown -= 1;
+                            countdownElement.textContent = countdown;
+                            if (countdown <= 0) {
+                                clearInterval(countdownInterval);
+                                window.location.href = "../index.html"; // 返回主頁面
+                            }
+                        }, 1000); // 每1秒更新一次
+                    } else {
+                        // 若機器人尚未到達，繼續檢查狀態
+                        setTimeout(checkRobotStatus, 5000); // 每5秒檢查一次
+                    }
+                } else {
+                    console.error('檢查機器人狀態失敗');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // 開始檢查機器人狀態
+        setTimeout(checkRobotStatus, 5000); // 開始第一次檢查
+
+</script>
+
+</body>
+
+</html>

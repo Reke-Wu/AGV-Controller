@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV Remote Control - Travel</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("../小清晰.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .box {
+            padding: 20px;
+            background-color: white;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #bdb1bd;
+            color: rgb(2, 2, 2);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .button:active {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 第一个页面：機器人正在返回待機點 -->
+    <div id="page1" class="container">
+        <div class="box">機器人正在返回待機點 <span id="dots">...</span></div>
+        <button class="button" onclick="abortMission()">終止任務</button>
+    </div>
+     <!-- 第二个页面：已抵達待機點 -->
+     <div id="page2" class="container" style="display: none;">
+        <div class="box">機器人已抵達待機點</div>
+        <div class="box">再 <span id="countdown"> 5 </span> 秒 回到首頁</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            const location = params.get("location");
+            document.getElementById("destination").textContent = location;
+
+            // 模擬機器人到達位置
+            setTimeout(() => {
+                document.getElementById("page1").style.display = "none";
+                document.getElementById("page2").style.display = "block";
+            }, 5000); // 調整這個時間來綁定機器人
+        });
+        
+        // 動態顯示點點動畫
+        document.addEventListener("DOMContentLoaded", function () {
+            const dotsElement = document.getElementById("dots");
+            let dotCount = 0;
+            setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dotsElement.textContent = '.'.repeat(dotCount);
+            }, 500); // 每0.5秒更新一次
+        });
+
+        function abortMission() {
+            window.location.href = '../其他任務/終止任務.html';
+        }
+        
+         // 倒计时
+         let countdown = 5;
+            const countdownElement = document.getElementById("countdown");
+            const countdownInterval = setInterval(() => {
+                countdown -= 1;
+                countdownElement.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = "../index.html"; // 前往地點引導travel 2
+                }
+            }, 1000); // 每1秒更新一次        
+    </script>
+</body>
+
+
+</html>

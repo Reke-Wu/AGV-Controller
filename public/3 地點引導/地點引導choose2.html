@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地點引導 選擇引導地點</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("../小清晰.jpg"); /*更換背景圖片*/
+            background-size: cover; /* 讓背景圖片充滿整個視窗 */
+            background-repeat: no-repeat; /* 禁止背景圖片重複顯示 */
+            font-family: Arial, sans-serif;
+            margin: 0; /* 重置預設邊距 */
+            padding: 0; /* 重置預設內邊距 */
+        }
+
+        .container {
+            padding-top: 100px; /* 上邊距增加到使得上一頁按鈕完全顯示 */
+            text-align: center; /* 確保所有內容水平居中 */
+        }
+
+        .box {
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自動左右置中 */
+            border-radius: 10px; /* 元素倒角 */
+            width: 70%; /* 初始寬度為頁面寬度的一半 */
+            max-width: none; /* 最大寬度為400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+        .back-button {
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            padding: 10px;
+            border: none;
+            border-radius: 5px; /*按鈕邊框倒角*/
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px; /*按鈕邊框倒角*/
+            cursor: pointer;
+            display: inline-block; /* 內聯塊級元素 */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center; /* 確保按鈕容器水平居中 */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="back-button" onclick="goBack()">上一頁</button>
+    <div class="container">
+        <div id="status" class="box">執行狀態: <span id="status-text">忙碌中</span></div>
+        <div class="box">請選擇引導地點</div>
+        <div class="button-container">
+            <button id="button1" class="button" style="display: none;" onclick="guideTo('診療室')">診療室</button>
+            <button id="button2" class="button" style="display: none;" onclick="guideTo('衛教室')">衛教室</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = new URLSearchParams(window.location.search);
+            const selectedLocation = params.get("location1");
+
+            if (selectedLocation === '診療室') {
+                document.getElementById("button2").style.display = "inline-block";
+            } else if (selectedLocation === '衛教室') {
+                document.getElementById("button1").style.display = "inline-block";
+            }
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function guideTo(location) {
+            const params = new URLSearchParams(window.location.search);
+            const location1 = params.get('location1');
+            const location2 = location;
+            window.location.href = `地點引導travel 1.html?location1=${location1}&location2=${location2}`;
+        }
+    </script>
+</body>
+
+</html>

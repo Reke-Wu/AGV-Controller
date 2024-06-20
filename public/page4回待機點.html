@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回待機點</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("小清晰.jpg"); /* 更換背景圖片 */
+            background-size: cover; /* 讓背景圖片充滿整個視窗 */
+            background-repeat: no-repeat; /* 禁止背景圖片重複顯示 */
+            font-family: Arial, sans-serif;
+            margin: 0; /* 重置默认边距 */
+            padding: 0; /* 重置默认内边距 */
+        }
+        
+        .container {
+            padding-top: 100px; /* 上边距增加到使得上一页按钮完全显示 */
+            display: flex; /* 使用 Flexbox */
+            flex-direction: column; /* 子元素垂直排列 */
+            align-items: center; /* 水平居中 */
+        }
+
+        .box { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px; /* 增加邊距以分隔元素 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 70%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            text-align: center; /* 文字居中 */
+        }
+
+        .box1 { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 30%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+        /* 按鈕樣式 */
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px; /* 按鈕邊框倒角 */
+            cursor: pointer;
+        }
+
+        /* 按鈕容器，使按鈕在同一行並且水平居中對稱 */
+        .button-container {
+            display: flex; /* 使用 Flexbox */
+            justify-content: space-between; /* 使按鈕兩側對稱 */
+            width: 30%; /* 容器寬度 */
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="box1">執行功能：回待機點</div>
+        <div id="status" class="box">執行狀態: <span id="status-text">忙碌中</span></div>
+        <div class="box">確定要回待機點?</div>
+        <div class="button-container">
+            <button class="button" onclick="window.history.back()">取消</button>
+            <button class="button" onclick="sendReturnToHomeCommand()">確定</button>
+        </div>
+    </div>
+
+    <script>
+        // 返回上一頁的函數
+        function goBack() {
+            window.history.back();
+        }
+
+        // 獲取訪問令牌的異步函數
+        async function getAccessToken() {
+            // 向伺服器請求訪問令牌
+            const response = await fetch('/api/get-token', { method: 'POST' });
+            // 解析回應的 JSON 數據
+            const data = await response.json();
+            // 返回訪問令牌
+            return data.access_token;
+        }
+
+        // 發送回到待機點指令的異步函數
+        async function sendReturnToHomeCommand() {
+            try {
+                // 獲取訪問令牌
+                const accessToken = await getAccessToken();
+
+                // 構建 FormData 對象，用於發送導航請求
+                const formData = new URLSearchParams();
+                formData.append('robot_sn', 'K21SHW0A1102410299AF'); // 替換為實際的機器人序列號
+                formData.append('is_batch', '1');
+                formData.append('msg_value', '起始點'); // 起始點即為待機點
+
+                // 發送導航請求給機器人
+                const response = await fetch('https://global-openapi.orionstar.com/v1/robot/pipe/cmd_navigation', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+
+                // 如果請求成功，跳轉到確定回待機點頁面
+                if (response.ok) {
+                    window.location.href = `4 回待機點/確定回待機點.html`;
+                } else {
+                    // 如果請求失敗，顯示錯誤信息
+                    alert('回待機點指令發送失敗');
+                }
+            } catch (error) {
+                // 錯誤處理，打印錯誤並提示用戶
+                console.error('回待機點過程中發生錯誤:', error);
+                alert('回待機點過程中發生錯誤');
+            }
+        }
+    </script>
+</body>
+</html>

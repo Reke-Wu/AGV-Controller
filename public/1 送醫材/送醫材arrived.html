@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV Remote Control - Arrived</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("../小清晰.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+
+        .box { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 70%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="page1"  class="container">
+        <div class="box">已抵達 <span id="arrived-location"></span>，交由現場人員執行任務</div>
+        <div class="box">再 <span id="countdown"> 5 </span> 秒 回到首頁</div>
+        
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            const location = params.get("location");
+            document.getElementById("arrived-location").textContent = location;
+               
+
+            // 倒计时
+            let countdown = 5;
+            const countdownElement = document.getElementById("countdown");
+            const countdownInterval = setInterval(() => {
+                countdown -= 1;
+                countdownElement.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = "../index.html"; // 返回主页面
+                }
+            }, 1000); // 每1秒更新一次
+
+        });
+
+    </script>
+</body>
+
+</html>

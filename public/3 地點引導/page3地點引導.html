@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地點引導 選擇起始地點</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("小清晰.jpg"); /*更換背景圖片*/
+            background-size: cover; /* 讓背景圖片充滿整個視窗 */
+            background-repeat: no-repeat; /* 禁止背景圖片重複顯示 */
+            font-family: Arial, sans-serif;
+            margin: 0; /* 重置默认边距 */
+            padding: 0; /* 重置默认内边距 */
+        }
+        
+        .container {
+            padding-top: 100px; /* 上邊距增加到使得上一頁按鈕完全顯示 */
+        }
+
+        .box {
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自動左右置中 */
+            border-radius: 10px; /* 元素倒角 */
+            width: 70%; /* 初始寬度為頁面寬度的一半 */
+            max-width: none; /* 最大寬度為400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+        .box1 { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 30%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+        /* 上一頁按鈕 */
+        .back-button {
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            padding: 10px;
+            border: none;
+            border-radius: 5px; /*按鈕邊框倒角*/
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        
+        /* 其他按鈕 */
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px; /*按鈕邊框倒角*/
+            cursor: pointer;
+            position: relative; /* 相對定位 */
+            left: 0; /* 水平置中 */
+            transform: translateX(-50%); /* 水平置中 */
+        }
+
+        /* 診療室按鈕 */
+        .button-left {
+            left: 40%; /* 使按鈕在父容器中間偏左 */
+        }
+
+        /* 衛教室按鈕 */
+        .button-right {
+            left: 50%; /* 使按鈕在父容器中間偏右 */
+        }
+    </style>
+
+</head>
+
+<body>
+    <button class="back-button" onclick="goBack()">上一頁</button>
+    <div class="container">
+        <div class="box1">執行功能：地點引導</div>
+        <div id="status" class="box">執行狀態: <span id="status-text">忙碌中</span></div>
+        <div class="box">請選擇開始地點</div>
+        <button class="button button-left" onclick="chooseStart('診療室')">診療室</button>
+        <button class="button button-right" onclick="chooseStart('衛教室')">衛教室</button>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function chooseStart(location) {
+            window.location.href = `3 地點引導/地點引導choose2.html?location1=${location}`;
+        }
+    </script>
+</body>
+
+</html>

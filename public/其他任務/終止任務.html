@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV Remote Control - Aborted</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("../小清晰.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+
+        .box { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 70%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">已終止任務 </div>
+        <div class="box">再 <span id="countdown"> 5 </span> 秒 回到首頁 </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let countdown = 5;
+            const interval = setInterval(() => {
+                countdown--;
+                document.getElementById('countdown').textContent = countdown;
+                if (countdown === 0) {
+                    clearInterval(interval);
+                    window.location.href = '../index.html';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>

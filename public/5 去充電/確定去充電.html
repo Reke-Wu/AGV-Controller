@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV Charging Status</title>
+    <style>
+        body {
+            background-image: url("../小清晰.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30vh;
+            flex-direction: column; /* 使内容垂直排列 */
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .box { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 70%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+       
+
+    </style>
+</head>
+
+<body>
+    <!-- 第一个页面：正在回去充电站 -->
+    <div id="page1" class="container">
+        <div class="box">正在回去充電站<span id="dots">...</span></div>
+    </div>
+    <!-- 第二个页面：已回到充电站 -->
+    <div id="page2" class="container" style="display: none;">
+        <div class="box">已回到充電站充電</div>
+        <div class="box">再 <span id="countdown">10</span> 秒 回到首頁</div>
+    </div>
+
+    <script>
+        // 动态显示点
+        document.addEventListener("DOMContentLoaded", function () {
+            const dotsElement = document.getElementById("dots"); // 获取显示点的元素
+            let dotCount = 0;
+            // 设置点的动画效果
+            setInterval(() => {
+                dotCount = (dotCount + 1) % 4; // 循环增加点的数量
+                dotsElement.textContent = '.'.repeat(dotCount); // 更新点的显示
+            }, 500); // 每0.5秒更新一次
+        });
+
+        // 模拟接收到机器人到达充电站的信号
+        function checkChargingStatus() {
+            fetch('https://global-openapi.orionstar.com/openapi/v1/task_status', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer YOUR_API_KEY' // 添加 API 金鑰
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 检查返回的状态码是否为成功到达目的地并开始充电
+                if (data.command === 'chargeAction' && data.code === '32610007') { 
+                    document.getElementById("page1").style.display = "none"; // 隐藏第一个页面
+                    document.getElementById("page2").style.display = "block"; // 显示第二个页面
+
+                    let countdown = 10;
+                    const countdownElement = document.getElementById("countdown"); // 获取倒计时元素
+                    const countdownInterval = setInterval(() => {
+                        countdown -= 1;
+                        countdownElement.textContent = countdown; // 更新倒计时
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval); // 清除倒计时
+                            window.location.href = "../index.html"; // 返回主页面
+                        }
+                    }, 1000); // 每1秒更新一次
+                } else {
+                    setTimeout(checkChargingStatus, 5000); // 每5秒检查一次充电状态
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error); // 打印错误信息
+            });
+        }
+
+        // 每隔5秒检查一次充电状态
+        setTimeout(checkChargingStatus, 5000); // 开始第一次检查
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+{
+  "name": "agv-remote-control",
+  "version": "1.0.0",
+  "description": "i am reke",
+  "main": "server.js",
+  "dependencies": {
+    "bufferutil": "^4.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "encoding": "^0.1.12",
+    "engine.io": "^6.5.4",
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0",
+    "npm-force-resolutions": "0.0.10",
+    "socket.io": "^4.7.5",
+    "socket.io-adapter": "^2.5.4",
+    "utf-8-validate": "^5.0.2",
+    "ws": "^8.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/AGV-Remote-Control.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yourusername/AGV-Remote-Control/issues"
+  },
+  "homepage": "https://github.com/yourusername/AGV-Remote-Control#readme",
+  "resolutions": {
+    "ws": "^8.17.1"
+  }
+}

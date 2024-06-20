@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送醫材</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            background-image: url("小清晰.jpg"); /*更換背景圖片*/
+            background-size: cover; /* 讓背景圖片充滿整個視窗 */
+            background-repeat: no-repeat; /* 禁止背景圖片重複顯示 */
+            font-family: Arial, sans-serif;
+            margin: 0; /* 重置默认边距 */
+            padding: 0; /* 重置默认内边距 */
+        }
+        
+        .container {
+            padding-top: 100px; /* 上边距增加到使得上一页按钮完全显示 */
+        }
+
+        .box { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 70%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+        .box1 { 
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto; /* 自动左右居中 */
+            border-radius: 10px; /* 執行狀態倒角 */
+            width: 30%; /* 初始宽度为页面宽度的一半 */
+            max-width: none; /* 最大宽度为400px */
+            position: relative; /* 用於定位 */
+            top: 50%; /* 垂直居中 */
+            transform: translateY(-50%); /* 垂直居中 */
+            text-align: center; /* 文字居中 */
+        }
+
+        /* 上一頁按鈕 */
+        .back-button {
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            padding: 10px;
+            border: none;
+            border-radius: 5px; /*按鈕邊框倒角*/
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        
+        /* 其他按鈕 */
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #c5c8cb;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px; /*按鈕邊框倒角*/
+            cursor: pointer;
+            position: relative; /* 相对定位 */
+            left: 0; /* 水平居中 */
+            transform: translateX(-50%); /* 水平居中 */
+        }
+
+        /* 診療室按鈕 */
+        .button-left {
+            left: 40%; /* 使按钮在父容器中间偏左 */
+        }
+
+        /* 醫材室按鈕 */
+        .button-right {
+            left: 50%; /* 使按钮在父容器中间偏右 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 返回上一頁的按鈕 -->
+    <button class="back-button" onclick="goBack()">上一頁</button>
+    <!-- 容器，使用 Flexbox 使內容垂直居中排列 -->
+    <div class="container">
+        <!-- 功能標題 -->
+        <div class="box1">執行功能：送醫材</div>
+        <!-- 執行狀態顯示區域 -->
+        <div id="status" class="box">執行狀態: <span id="status-text">忙碌中</span></div>
+        <!-- 選擇起點提示 -->
+        <div id="button-container" class="box">請選擇起點</div>
+        <!-- 診療室按鈕 -->
+        <button class="button button-left" onclick="chooseStart('診療室')">診療室</button>
+        <!-- 醫材室按鈕 -->
+        <button class="button button-right" onclick="chooseStart('醫材室')">醫材室</button>
+    </div>
+
+    <script>
+        // 返回上一頁的函數
+        function goBack() {
+            window.history.back();
+        }
+
+        // 獲取訪問憑證的異步函數
+        async function getAccessToken() {
+            // 向伺服器請求訪問憑證
+            const response = await fetch('/api/get-token', { method: 'POST' });
+            // 解析回應的 JSON 數據
+            const data = await response.json();
+            // 返回訪問憑證
+            return data.access_token;
+        }
+
+        // 獲取地圖信息的異步函數，包含请求 URL 参数
+        async function getMapInfo(accessToken) {
+            // 構建請求 URL，包含 robot_sn 參數
+            const robotSn = 'K21SHW0A1102410299AF'; // 替換為實際的機器人序列號
+            const url = `https://global-openapi.orionstar.com/v1/robot/map/position_list?robot_sn=${robotSn}`;
+
+            // 向機器人 API 發送請求以獲取地圖信息
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
+            // 解析回應的 JSON 數據
+            const data = await response.json();
+            return data.data.position_list;
+        }
+
+        // 發送導航指令的異步函數
+        async function navigateToLocation(locationName) {
+            try {
+                // 獲取訪問憑證
+                const accessToken = await getAccessToken();
+                // 獲取地圖信息
+                const positionList = await getMapInfo(accessToken);
+
+                // 找到與按鈕名稱匹配的地點
+                const position = positionList.find(pos => pos.name === locationName);
+
+                if (position) {
+                    // 構建 URLSearchParams 對象，用於發送導航請求
+                    const formData = new URLSearchParams();
+                    formData.append('robot_sn', 'K21SHW0A1102410299AF'); // 替換為實際的機器人序列號
+                    formData.append('is_batch', '1');
+                    formData.append('msg_value', locationName);
+
+                    // 發送導航請求給機器人
+                    const response = await fetch('https://global-openapi.orionstar.com/v1/robot/pipe/cmd_navigation', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData
+                    });
+
+                    // 如果請求成功，跳轉到導航過程頁面
+                    if (response.ok) {
+                        window.location.href = `1 送醫材/送醫材travel.html?location=${locationName}`;
+                    } else {
+                        // 如果請求失敗，顯示錯誤信息
+                        alert('導航指令發送失敗');
+                    }
+                } else {
+                    // 如果位置未找到，顯示錯誤信息
+                    alert('位置未找到');
+                }
+            } catch (error) {
+                // 錯誤處理，打印錯誤並提示用戶
+                console.error('導航過程中發生錯誤:', error);
+                alert('導航過程中發生錯誤');
+            }
+        }
+
+        // 選擇起點的函數，調用導航函數
+        function chooseStart(location) {
+            navigateToLocation(location);
+        }
+    </script>
+</body>
+
+
+
+
+</html>
